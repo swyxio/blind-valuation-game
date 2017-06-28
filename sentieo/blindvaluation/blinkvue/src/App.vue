@@ -1,18 +1,30 @@
 <template>
   <div id="app" class="container">
     <div class="page-header">
-      <h1>Sentieo Blink <br/> <small>High Frequency Value Investing</small></h1>
+      <h1>Sentieo Blink <small>
+
+        <transition name="with-mode-fade" mode="out-in">
+          <span v-if="subtitleText" key="a"><br />High Frequency Value Investing<br /></span>
+          <span v-else key="b">/bliNGk/ <em>verb</em> <br /><small>"There can be as much value in the blink of an eye as in months of rational analysis." - Malcolm Gladwell, <a href="https://www.goodreads.com/work/quotes/1180927-blink-the-power-of-thinking-without-thinking" target="_blank">Blink: The Power of Thinking Without Thinking</a></small></span>
+        </transition>
+      </small></h1>
     </div>
-    <div class="panel panel-default">
+    <div class="panel panel-default" v-if="!emailSubmitted">
       <div class="panel-heading">
-        <h3 class="panel-title">Blind Valuation Financials (Stage: {{ currentstage + 1 }} of 3)</h3>
+        <h3 class="panel-title" v-if="currentstage < 3">Blind Valuation Financials (Test Stage: {{ currentstage + 1 }} of 3)</h3>
+        <h3 class="panel-title" v-else>Blind Valuation Financials: Final Stage!</h3>
       </div>
       <div class="panel-body">
-          Sector: Consumer Discretionary. Absolute numbers in millions.
-         <VueTable :tableticker="currentstock" :showanswer="showanswer" :currentguess="currentguess"></VueTable>
+          <span v-if="currentstage < 3">
+            Sector: Consumer Discretionary. Absolute numbers in millions.
+          </span>
+          <span v-else class="alert alert-warning">
+            Last stage! Take everything you have learned from the last 3 stages and put in your best guess!
+          </span>
+         <VueTable :tableticker="currentstock" :showanswer="showanswer" :currentguess="currentguess" :currentstage="currentstage"></VueTable>
       </div>
     </div>
-    <div class="panel panel-default">
+    <div class="panel panel-default" v-if="!emailSubmitted">
       <div class="panel-heading">
         <h3 class="panel-title">Guess the current per-share price (not what <em>you</em> would pay, but what the market pays)</h3>
       </div>
@@ -25,12 +37,34 @@
           <input type="submit" class="btn btn-primary" value="Submit">
         </form>
       </div>
-      <div class="panel-body" v-if="showanswer">
+      <div class="panel-body" v-if="showanswer && currentstage < 3">
          <form id="form" class="form-inline" v-on:submit.prevent="nextStock">
           The stock was: <a :href="`https://www.google.com/finance?q=${currentstock}`" target="_blank">{{ currentstock.toUpperCase() }}</a>! Are you surprised?
           <input type="submit" class="btn btn-secondary" value="Show the Next Stock!">
         </form>
       </div>
+      <div class="panel-body" v-if="showanswer && currentstage > 2">
+         <form id="form" class="form-inline" v-on:submit.prevent="saveEmail">
+          <div class="form-group">
+            <label for="emaillabel">Enter your email to receive results (and find out the distribution of answers!):</label>
+            <input type="email" placeholder="your@email.com" id="UserEmail" class="form-control" v-model="useremail">
+            <label for="feedbacklabel">(Optional) Any feedback for us?</label>
+            <input type="textarea" placeholder="We <3 your ideas" id="UserFeedback" class="form-control" v-model="userfeedback">
+          </div>
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </form>
+      </div>
+    </div>
+    <div class="panel panel-default" v-if="emailSubmitted">
+      <div class="panel-heading">
+        <h3 class="panel-title">Thank you!</h3>
+      </div>
+      <div class="panel-body">
+        <p>Thanks for submitting your final answer! We will be in touch shortly once we tally the results, and hopefully launch the next iteration of this blind valuation contest!</p>
+        <p>If you enjoyed this game, tell your friends on <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsentieoblinkvue.firebaseapp.com%2F%23%2F&via=sentieo&text=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F" target="_blank">Twitter</a> or <a href=”mailto:yourfriends@email.com?subject=Sentieo%20Blink&body=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F%0Ahttps%3A%2F%2Fsentieoblinkvue.firebaseapp.com%3F%0ARegards%20″>email</a> and compare your results!</p>
+        <p>If you are a fundamental investor looking for more time-saving research tools, check us out at <a href="https://sentieo.com/?utm_source=sentieoblink&utm_medium=lead-gen&utm_term=&utm_content=sentieoblink&utm_campaign=sentieoblink&utm_code=blink0001&code=blink0001">Sentieo</a> and get a free trial today!</p>
+      </div>
+    </div>
       <!--
       <div class="panel-body">
          <form id="form" class="form-inline" v-on:submit.prevent="addBook">
@@ -46,7 +80,6 @@
         </form>
       </div>
       -->
-    </div>
     <!--
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -80,8 +113,7 @@ import toastr from 'toastr';
 import Hello from './components/Hello';
 import VueTable from './components/VueTable';
 
-const stocks = ['lkq', 'gpc', 'azo'];
-// const finalstock = 'aap';
+const stocks = ['lkq', 'gpc', 'azo', 'aap'];
 console.log('yes, we know you can see this, this game is meant for less technical folk');
 
 const config = {
@@ -113,7 +145,16 @@ export default {
       showanswer: false,
       currentguess: 10.00,
       allguesses: [],
+      useremail: '',
+      userfeedback: '',
+      emailSubmitted: false,
+      subtitleText: true,
     };
+  },
+  mounted() {
+    console.log('mounted');
+    const self = this;
+    setInterval(() => { self.subtitleText = !self.subtitleText; }, 4000);
   },
   methods: {
     addBook: function abc() {
@@ -129,11 +170,19 @@ export default {
       this.showanswer = true;
     },
     nextStock: function defb() {
-    //   this.allguesses.push(this.currentguess);
+      this.allguesses.push(this.currentguess);
       this.currentstage += 1;
       this.currentstock = stocks[this.currentstage];
-      this.currentguess = 0.01;
+      this.currentguess = 10.00;
       this.showanswer = false;
+    },
+    saveEmail: function defc() {
+      booksRef.push({ email: this.useremail,
+        feedback: this.userfeedback,
+        guesses: this.allguesses,
+        dt: new Date(),
+      });
+      this.emailSubmitted = true;
     },
   },
 
@@ -151,4 +200,31 @@ export default {
   color: #2c3e50;
   margin-top: 20px;
 }
+
+/*.bk {
+  transition: all 1s ease-out;
+}
+
+.blur {
+  opacity: 0;
+}*/
+/*
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0
+}*/
+
+.with-mode-fade-enter-active, .with-mode-fade-leave-active {
+  transition: opacity 1s
+}
+.with-mode-fade-enter, .with-mode-fade-leave-active {
+  opacity: 0
+}
+
+/*.blur {
+  filter: blur(2px);
+  opacity: 0.4;
+}*/
 </style>

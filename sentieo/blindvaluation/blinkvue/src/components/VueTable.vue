@@ -1,7 +1,7 @@
     // <input type="text" v-model="search" class="form-control" placeholder="Filter field..." />
 <template>
   <div id="vue-table">
-    <div id="tableanswer" v-if="showanswer" v-bind:class="{ alert: true, 'alert-success': Math.abs(Math.round((currentguess / currentprice - 1) * 100)) < 11 , 'alert-danger': Math.abs(Math.round((currentguess / currentprice - 1) * 100)) > 11}">
+    <div id="tableanswer" v-if="showanswer & currentstage < 3" v-bind:class="{ alert: true, 'alert-success': Math.abs(Math.round((currentguess / currentprice - 1) * 100)) < 11 , 'alert-danger': Math.abs(Math.round((currentguess / currentprice - 1) * 100)) > 11}">
         Ticker: <a :href="`https://www.google.com/finance?q=${tableticker}`" target="_blank">{{ tableticker.toUpperCase() }}</a> ( {{ currentname }}, ${{ Math.round(market_cap * 100) / 100 }}bn mkt cap ) <br />
         Your guess: {{ currentguess }} vs Current price: {{ currentprice }} (1yr range: {{ range_52 }})<br />
         <span v-if="Math.abs(Math.round((currentguess / currentprice - 1) * 100)) < 11">
@@ -92,7 +92,7 @@ const masterFieldList = {
 export default {
   name: 'vuetable',
   // el: '#vue-table',
-  props: ['tableticker', 'showanswer', 'currentguess'],
+  props: ['tableticker', 'showanswer', 'currentguess', 'currentstage'],
   computed: {
     filterpeople: function x() {
       const self = this;
@@ -130,10 +130,8 @@ export default {
         this.errors.push(e);
       });
     });
-    console.log('created api');
     axios.get(`https://app.sentieo.com/api/mobile_stock_data/?ticker=${this.tableticker}${APIKEY}`)
     .then((response) => {
-      console.log('created api2', response.data.result.intraday);
       this.currentprice = response.data.result.intraday.current_price;
       this.currentname = response.data.result.intraday.name;
       this.market_cap = Number(response.data.result.intraday.market_cap) / 1000;
@@ -158,7 +156,6 @@ export default {
       });
       axios.get(`https://app.sentieo.com/api/mobile_stock_data/?ticker=${newtt}${APIKEY}`)
       .then((response) => {
-        console.log('created api2', response.data.result.intraday);
         this.currentprice = response.data.result.intraday.current_price;
         this.currentname = response.data.result.intraday.name;
         this.market_cap = Number(response.data.result.intraday.market_cap) / 1000;
@@ -233,7 +230,7 @@ h1, h2 {
   font-weight: normal;
 }
 #tableanswer {
-  font-size: 1.5em;
+  font-size: 1.25em;
   color: red;
   text-align: center;
 }
