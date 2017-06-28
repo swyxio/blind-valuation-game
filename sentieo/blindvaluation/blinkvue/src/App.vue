@@ -150,6 +150,7 @@ export default {
       this.showanswer = false;
     },
     saveEmail: function defc() {
+      this.allguesses.push(this.currentguess);
       booksRef.push({ email: this.useremail,
         feedback: this.userfeedback,
         guesses: this.allguesses,
