@@ -69,49 +69,16 @@
       <div class="panel-body">
         <p>Thanks for submitting your final answer! We will be in touch shortly once we tally the results, and hopefully launch the next iteration of this blind valuation contest!</p>
         <p>If you enjoyed this game, tell your friends on <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsentieoblinkvue.firebaseapp.com%2F%23%2F&via=sentieo&text=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F" target="_blank">Twitter</a> or <a href="mailto:yourfriends@email.com?subject=Sentieo%20Blink&body=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F%0Ahttps%3A%2F%2Fsentieoblinkvue.firebaseapp.com%3F%0ARegards%20">email</a> and compare your results!</p>
-        <p>If you are a fundamental investor looking for more time-saving research tools, check us out at <a href="https://sentieo.com/?utm_source=sentieoblink&utm_medium=lead-gen&utm_term=&utm_content=sentieoblink&utm_campaign=sentieoblink&utm_code=blink0001&code=blink0001">Sentieo</a> and get a free trial today!</p>
+        <p>If you are a fundamental investor looking for more time-saving research tools, check us out at <a href="https://sentieo.com/?utm_source=sentieoblink&utm_medium=lead-gen&utm_term=&utm_content=sentieoblink&utm_campaign=sentieoblink&utm_code=blink0001&code=blink0001" target="_blank">Sentieo</a> and get a free trial today!</p>
       </div>
     </div>
-      <!--
-      <div class="panel-body">
-         <form id="form" class="form-inline" v-on:submit.prevent="addBook">
-          <div class="form-group">
-            <label for="bookTitle">High:</label>
-            <input type="text" id="bookTitle" class="form-control" v-model="newBook.title">
-          </div>
-          <div class="form-group">
-            <label for="bookAuthor">Low:</label>
-            <input type="text" id="bookAuthor" class="form-control" v-model="newBook.author">
-          </div>
-          <input type="submit" class="btn btn-primary" value="Submit">
-        </form>
-      </div>
-      -->
-    <!--
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Book List</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Author</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="book in books">
-              <td>{{book.title}}</td>
-              <td>{{book.author}}</td>
-              <td><span class="glyphicon glyphicon-trash" aria-hidden="true" v-on:click="removeBook(book)"></span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="footer">
+      <p>
+        <a href="https://sentieo.com/?utm_source=sentieoblink&utm_medium=lead-gen&utm_term=&utm_content=sentieoblink&utm_campaign=sentieoblink&utm_code=blink0001&code=blink0001" target="_blank"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/AAEAAQAAAAAAAARDAAAAJGI0M2YzNDJhLWZhZjQtNGI4Mi05MGU0LTA0ZmQ2Y2ZkMjk1MQ.png" /></a>
+      </p>
+      <p>Copyright © 2017 Sentieo Inc. | All Rights Reserved</p>
+      <p><a href="https://sentieo.com/content/legal/terms-of-service.html">TERMS OF SERVICE</a> | <a href="https://sentieo.com/content/legal/privacy-policy.html">PRIVACY POLICY</a></p>
     </div>
-    -->
   </div>
 </template>
 <script>
@@ -207,30 +174,17 @@ export default {
   margin-top: 20px;
 }
 
-/*.bk {
-  transition: all 1s ease-out;
-}
-
-.blur {
-  opacity: 0;
-}*/
-/*
-.fade-enter-active, .fade-leave-active {
-  transition: opacity .5s
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0
-}*/
-
 .with-mode-fade-enter-active, .with-mode-fade-leave-active {
   transition: opacity 1s
 }
 .with-mode-fade-enter, .with-mode-fade-leave-active {
   opacity: 0
 }
-
-/*.blur {
-  filter: blur(2px);
-  opacity: 0.4;
-}*/
+.footer {
+  text-align: center;
+}
+.footer img {
+  height: 50px;
+  width: 50px;
+}
 </style>
