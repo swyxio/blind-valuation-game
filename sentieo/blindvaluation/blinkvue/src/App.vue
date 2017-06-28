@@ -9,18 +9,23 @@
         </transition>
       </small></h1>
     </div>
+    <div>
+      <div class="alert alert-warning" v-if="currentstage < 3">
+        <h4>This is a blind stock valuation game inspired by Ben Graham and Warren Buffet and popularized by <a href="https://www.gannononinvesting.com/blog/how-much-would-you-pay-for-this-stock-blind-stock-valuation.html" target="_blank">Geoff Gannon</a> and <a href="http://www.distressed-debt-investing.com/2012/06/value-investing-hidden-stock-price.html" target="_blank">others</a>. </h4>
+        <p>Buffett believes that guessing the stock price keeps the emphasis on the fundamentals and avoids anchoring bias explored by the likes of <a href="http://www.amazon.com/gp/product/0374275637/ref=as_li_ss_tl?ie=UTF8&tag=amildolonthew-20&linkCode=as2&camp=1789&creative=390957&creativeASIN=0374275637" target="_blank">Daniel Kahneman</a>.
+        <p>To help you warm up, we give you three test stocks from the same sector (Consumer Discretionary) to calibrate your "feel". Then we put your snap valuation skills to the test!</p>
+        <p>Absolute numbers below are in USD millions. Good luck!</p>
+      </div>
+      <div v-else class="alert alert-danger">
+        <p>Last stage! Take everything you have learned from the last 3 stages and put in your best guess!</p>
+      </div>
+    </div>
     <div class="panel panel-default" v-if="!emailSubmitted">
       <div class="panel-heading">
         <h3 class="panel-title" v-if="currentstage < 3">Blind Valuation Financials (Test Stage: {{ currentstage + 1 }} of 3)</h3>
         <h3 class="panel-title" v-else>Blind Valuation Financials: Final Stage!</h3>
       </div>
       <div class="panel-body">
-          <span v-if="currentstage < 3">
-            Sector: Consumer Discretionary. Absolute numbers in millions.
-          </span>
-          <span v-else class="alert alert-warning">
-            Last stage! Take everything you have learned from the last 3 stages and put in your best guess!
-          </span>
          <VueTable :tableticker="currentstock" :showanswer="showanswer" :currentguess="currentguess" :currentstage="currentstage"></VueTable>
       </div>
     </div>
@@ -48,8 +53,10 @@
           <div class="form-group">
             <label for="emaillabel">Enter your email to receive results (and find out the distribution of answers!):</label>
             <input type="email" placeholder="your@email.com" id="UserEmail" class="form-control" v-model="useremail">
-            <label for="feedbacklabel">(Optional) Any feedback for us?</label>
-            <input type="textarea" placeholder="We <3 your ideas" id="UserFeedback" class="form-control" v-model="userfeedback">
+          </div>
+          <div class="form-group">
+            <label for="feedbacklabel">(Optional) Any feedback for us? Justification for your valuation?</label>
+            <textarea rows="4" cols="50" placeholder="We <3 your ideas" id="UserFeedback" class="form-control" v-model="userfeedback" />
           </div>
           <input type="submit" class="btn btn-primary" value="Submit">
         </form>
@@ -152,7 +159,6 @@ export default {
     };
   },
   mounted() {
-    console.log('mounted');
     const self = this;
     setInterval(() => { self.subtitleText = !self.subtitleText; }, 4000);
   },
