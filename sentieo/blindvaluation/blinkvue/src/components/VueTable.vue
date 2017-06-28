@@ -1,6 +1,16 @@
     // <input type="text" v-model="search" class="form-control" placeholder="Filter field..." />
 <template>
   <div id="vue-table">
+    <div id="tableanswer" v-if="showanswer" v-bind:class="{ alert: true, 'alert-success': Math.abs(Math.round((currentguess / currentprice - 1) * 100)) < 11 , 'alert-danger': Math.abs(Math.round((currentguess / currentprice - 1) * 100)) > 11}">
+        Ticker: <a :href="`https://www.google.com/finance?q=${tableticker}`" target="_blank">{{ tableticker.toUpperCase() }}</a> ( {{ currentname }}, ${{ Math.round(market_cap * 100) / 100 }}bn mkt cap ) <br />
+        Your guess: {{ currentguess }} vs Current price: {{ currentprice }} (1yr range: {{ range_52 }})<br />
+        <span v-if="Math.abs(Math.round((currentguess / currentprice - 1) * 100)) < 11">
+          Very close! You were within {{ Math.floor((currentguess / currentprice - 1) * 100) }}%!
+        </span>
+        <span v-else>
+          Oof! You were off by {{ Math.floor((currentguess / currentprice - 1) * 100) }}%!
+        </span>
+    </div>
     <table class="table table-striped table-hover"> 
       <thead>
         <tr>
@@ -52,7 +62,8 @@
             </td>
           </tr>
       </tbody>
-    </table>  
+    </table>
+    <i>Current share count: {{ shares_count }} million.</i>
   </div>
 </template>
 
@@ -65,8 +76,8 @@ import Vue from 'vue';
 import VueAxios from 'vue-axios';
 
 Vue.use(VueAxios, axios);
-const REST_API = 'https://app.sentieo.com/api/fetch_value_table/?ticker=amzn';
-const APIKEY = '&apikey=73e127d36e46d3ef6e13c34da5ac3bb12558f657d4f67b2679a282b545e5f315';
+const REST_API = 'https://app.sentieo.com/api/fetch_value_table/?ticker=';
+const APIKEY = '&apikey=37c5d1eb66f3c98d7da2d742743e00bebdf1232abbcffe7decb107c5f8d0b2d6';
 const masterFieldList = {
   TotalRevenue: { format: '0dp', name: 'Sales' },
   GrossMargin: { format: 'pct', name: 'Gross Margin' },
@@ -81,6 +92,7 @@ const masterFieldList = {
 export default {
   name: 'vuetable',
   // el: '#vue-table',
+  props: ['tableticker', 'showanswer', 'currentguess'],
   computed: {
     filterpeople: function x() {
       const self = this;
@@ -97,16 +109,20 @@ export default {
       search: '',
       reverse: false,
       data: {},
+      currentprice: 0,
+      currentname: '',
+      market_cap: 0,
+      range_52: '',
+      shares_count: 0,
       masterFieldList,
+      errors: [],
     };
   },
   // Fetches posts when the component is created.
   created() {
     Object.keys(masterFieldList).forEach((datatype) => {
-      axios.get(`${REST_API}&type=${datatype}${APIKEY}`)
+      axios.get(`${REST_API}${this.tableticker}&type=${datatype}${APIKEY}`)
       .then((response) => {
-        // (x => console.log(`this ${datatype}`, x))(this.data);
-        // (x => console.log(`this ${datatype}`, x))(response);
         this.data[datatype] = response.data.result;
         this.data = JSON.parse(JSON.stringify(this.data));
       })
@@ -114,6 +130,45 @@ export default {
         this.errors.push(e);
       });
     });
+    console.log('created api');
+    axios.get(`https://app.sentieo.com/api/mobile_stock_data/?ticker=${this.tableticker}${APIKEY}`)
+    .then((response) => {
+      console.log('created api2', response.data.result.intraday);
+      this.currentprice = response.data.result.intraday.current_price;
+      this.currentname = response.data.result.intraday.name;
+      this.market_cap = Number(response.data.result.intraday.market_cap) / 1000;
+      this.range_52 = response.data.result.intraday.range_52;
+      this.shares_count = Number(response.data.result.intraday.shares);
+    })
+    .catch((e) => {
+      this.errors.push(e);
+    });
+  },
+  watch: {
+    tableticker: function ttfunc(newtt) {
+      Object.keys(masterFieldList).forEach((datatype) => {
+        axios.get(`${REST_API}${newtt}&type=${datatype}${APIKEY}`)
+        .then((response) => {
+          this.data[datatype] = response.data.result;
+          this.data = JSON.parse(JSON.stringify(this.data));
+        })
+        .catch((e) => {
+          this.errors.push(e);
+        });
+      });
+      axios.get(`https://app.sentieo.com/api/mobile_stock_data/?ticker=${newtt}${APIKEY}`)
+      .then((response) => {
+        console.log('created api2', response.data.result.intraday);
+        this.currentprice = response.data.result.intraday.current_price;
+        this.currentname = response.data.result.intraday.name;
+        this.market_cap = Number(response.data.result.intraday.market_cap) / 1000;
+        this.range_52 = response.data.result.intraday.range_52;
+        this.shares_count = Number(response.data.result.intraday.shares);
+      })
+      .catch((e) => {
+        this.errors.push(e);
+      });
+    },
   },
   methods: {
     sortBy: function y(sortKey) {
@@ -176,6 +231,11 @@ export default {
 <style scoped>
 h1, h2 {
   font-weight: normal;
+}
+#tableanswer {
+  font-size: 1.5em;
+  color: red;
+  text-align: center;
 }
 
 ul {
