@@ -9,7 +9,7 @@
         </transition>
       </small></h1>
     </div>
-    <div>
+    <div v-if="!emailSubmitted">
       <div class="alert alert-warning" v-if="currentstage < 3">
         <h4>This is a blind stock valuation game inspired by Ben Graham and Warren Buffet and popularized by <a href="https://www.gannononinvesting.com/blog/how-much-would-you-pay-for-this-stock-blind-stock-valuation.html" target="_blank">Geoff Gannon</a> and <a href="http://www.distressed-debt-investing.com/2012/06/value-investing-hidden-stock-price.html" target="_blank">others</a>. </h4>
         <p>Buffett believes that guessing the stock price keeps the emphasis on the fundamentals and avoids anchoring bias explored by the likes of <a href="http://www.amazon.com/gp/product/0374275637/ref=as_li_ss_tl?ie=UTF8&tag=amildolonthew-20&linkCode=as2&camp=1789&creative=390957&creativeASIN=0374275637" target="_blank">Daniel Kahneman</a>.
@@ -68,7 +68,7 @@
       </div>
       <div class="panel-body">
         <p>Thanks for submitting your final answer! We will be in touch shortly once we tally the results, and hopefully launch the next iteration of this blind valuation contest!</p>
-        <p>If you enjoyed this game, tell your friends on <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsentieoblinkvue.firebaseapp.com%2F%23%2F&via=sentieo&text=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F" target="_blank">Twitter</a> or <a href=”mailto:yourfriends@email.com?subject=Sentieo%20Blink&body=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F%0Ahttps%3A%2F%2Fsentieoblinkvue.firebaseapp.com%3F%0ARegards%20″>email</a> and compare your results!</p>
+        <p>If you enjoyed this game, tell your friends on <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsentieoblinkvue.firebaseapp.com%2F%23%2F&via=sentieo&text=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F" target="_blank">Twitter</a> or <a href="mailto:yourfriends@email.com?subject=Sentieo%20Blink&body=Just%20completed%20the%20@Sentieo%20Blink%20blind%20valuation%20game%21%20What%20was%20your%20final%20answer%3F%0Ahttps%3A%2F%2Fsentieoblinkvue.firebaseapp.com%3F%0ARegards%20">email</a> and compare your results!</p>
         <p>If you are a fundamental investor looking for more time-saving research tools, check us out at <a href="https://sentieo.com/?utm_source=sentieoblink&utm_medium=lead-gen&utm_term=&utm_content=sentieoblink&utm_campaign=sentieoblink&utm_code=blink0001&code=blink0001">Sentieo</a> and get a free trial today!</p>
       </div>
     </div>
@@ -186,7 +186,7 @@ export default {
       booksRef.push({ email: this.useremail,
         feedback: this.userfeedback,
         guesses: this.allguesses,
-        dt: new Date(),
+        dt: String(new Date()),
       });
       this.emailSubmitted = true;
     },
